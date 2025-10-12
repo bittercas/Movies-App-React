@@ -1,6 +1,24 @@
-# React + Vite
+# 🎬 React Movie Finder App
 
-To run the server, make sure you are in the directory that contains the package.json file, which is "my-first-react-app".
+This is a movie search web application built with **React** as part of a course project. It integrates with the **TMDb API** to fetch and display movie data, and uses **Appwrite** to store and track trending searches.
+
+## 🚀 Features
+
+- 🔍 **Search Movies** — Search thousands of movies using the TMDb API.
+- 🕓 **Debounced Input** — API calls are optimized with debounce to avoid unnecessary requests.
+- 📊 **Trending Movies** — Top 5 trending search terms stored and retrieved via Appwrite.
+- 🖼️ **Dynamic UI** — Movie cards display title, rating, language, and release year.
+- 🔄 **Loading States & Error Handling** — Friendly feedback when loading or when errors occur.
+- 🌐 **Responsive & Clean Layout** — Simple, user-friendly interface built with modern styling.
+
+## 🧰 Technologies Used
+
+- **React** (Functional Components, Hooks)
+- **TMDb API** – for movie data
+- **Appwrite** – for backend database (tracking searches)
+- **react-use** – for debounced search functionality
+- **Vite** – for fast development environment
+
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
