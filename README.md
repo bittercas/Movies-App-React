@@ -1,7 +1,7 @@
 # 🎬 React Movie Finder App
 ![App Screenshot](public/ui.png)
 
-This is a movie search web application built with **React** as part of a course project. It integrates with the **TMDb API** to fetch and display movie data, and uses **Appwrite** to store and track trending searches.
+This is a movie search web application built with **React** as part of a course project. It integrates with the **TMDb API** to fetch and display movie data, and uses **Appwrite** to store and track trending searches. I am currently working on the back-end side of the application, that will be developed with technologies such as Node with Express and a non-relational database. You can find the updates here as well.
 
 ## 🚀 Features
 
