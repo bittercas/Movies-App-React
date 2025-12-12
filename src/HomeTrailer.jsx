@@ -4,7 +4,7 @@ import MovieCard from './components/MovieCard.jsx';
 import { useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
 import { getTrendingMovies, updateSearchCount } from './appwrite.js';
-import { Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -17,55 +17,35 @@ const API_OPTIONS = {
   },
 };
 
-const App = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [movieList, setMovieList] = useState([]);
-  const [trendingMovies, setTrendingMovies] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [open, setOpen] = useState(false);
+const HomeTrailer = () => {
+    const [open, setOpen] = useState(false); // Navbar toggle
+    const {title} = useParams();
+    const [trailer, setTrailer] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-  useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
+    const fetchTrailer = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(`/api/trailer/${encodeURIComponent(title)}`);
+            if(!response.ok) {
+                throw new Error ('Error Fetching Trailer');
+            }
+            const data = await response.json();
+            setTrailer(data);
+        }
+        catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const fetchMovies = async (query = '') => {
-    setLoading(true);
-    setErrorMessage('');
-    try {
-      const endpoint = query
-        ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
-        : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
-      const response = await fetch(endpoint, API_OPTIONS);
-      if (!response.ok) throw new Error('Failed to fetch movies');
-      const data = await response.json();
-      setMovieList(data.results || []);
-      if (query && data.results.length > 0) await updateSearchCount(query, data.results[0]);
-    } catch (error) {
-      console.error(error);
-      setErrorMessage('There was an error. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    useEffect(() => {
+        console.log(title)
+        fetchTrailer();
+    }, [title]);
 
-  const loadTrendingMovies = async () => {
-    try {
-      const movies = await getTrendingMovies();
-      setTrendingMovies(movies);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchMovies(debouncedSearchTerm);
-  }, [debouncedSearchTerm]);
-
-  useEffect(() => {
-    loadTrendingMovies();
-  }, []);
-
-  return (
+    return (
     <main>
       <div className="pattern" />
       <div className="wrapper">
@@ -108,49 +88,35 @@ const App = () => {
                     <Link className="block py-2 px-3 text-white rounded-sm dark:text-dark-100" to="/login">Login</Link>
                   </li>
                   <li>
-                    <a className="block py-2 px-3 text-white rounded-sm dark:text-dark-100" to="/">Forum</a>
+                    <a href="#" className="block py-2 px-3 text-white rounded-sm hover:bg-light-200 dark:hover:bg-dark-100">Forum</a>
                   </li>
                 </ul>
               </div>
             </div>
           </nav>
-          <h1>Find <span className="text-gradient">Movies</span> You'll Enjoy!</h1>
-          <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-          <h1 className="text-white">{searchTerm}</h1>
-        </header>
-        {trendingMovies.length > 0 && (
-          <section className="trending">
-            <h2>Trending Movies</h2>
-            <ul>
-              {trendingMovies.map((movie, index) => (
-                <li key={movie.$id}>
-                  <p>{index + 1}</p>
-                  <img src={movie.poster_url} alt={movie.title} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-        <section className="all-movies">
-          <h2>All Movies</h2>
+          <h1>Watch <span className="text-gradient">{title}</span> Trailer Now!</h1>
           {loading ? (
             <Spinner />
-          ) : errorMessage ? (
-            <p className="text-red-500">{errorMessage}</p>
-          ) : (
-            <ul>
-              {movieList.map((movie) => (
-                <MovieCard key={movie.id} movie={movie} />
-              ))}
-            </ul>
-          )}
-        </section>
+          ) : <section className='youtubeTrailer'>
+          {trailer && (
+            <iframe
+                width="800"
+                height="450"
+                src={`https://www.youtube.com/embed/${trailer.videoId}`}
+                title={trailer.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen>
+            </iframe>
+            )}
+            </section>
+            }
+        </header>
       </div>
       <footer className="bg-[#470047] text-white py-10 mt-10">
         <div className="max-w-screen-xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <ul className="space-y-2">
-              <li><Link className="hover:text-gray-200" to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link></li>
+              <li><Link className="hover:text-gray-200" to="/">Home</Link></li>
               <li><Link className="hover:text-gray-200" to="/register">Register</Link></li>
               <li><Link className="hover:text-gray-200" to="/login">Login</Link></li>
               <li><a className="hover:text-gray-200" href="#forum">Forum</a></li>
@@ -175,9 +141,4 @@ const App = () => {
   );
 };
 
-export default App;
-
-
-
-
-
+export default HomeTrailer;

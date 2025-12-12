@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
-        'hero-pattern': "url('/hero-bg.png')",
+        'hero-pattern': "url('/cinema.jpg')",
       },
       colors: {
         primary: "#030014",
